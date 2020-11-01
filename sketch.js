@@ -1,6 +1,6 @@
-//Author : Mihishkaa Sinha
-//Flappy Bird
 BIRD_HEIGHT = 60
+
+
 l = null
 gameManager = null
 p = null
@@ -8,7 +8,6 @@ b_image = null
 bird_image = null
 backManager = null
 play_image = null
-
 function preload(){
     b_image = loadImage("background.png")
     bird_image = loadImage("flappy.jpg")
