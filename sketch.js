@@ -1,6 +1,4 @@
 BIRD_HEIGHT = 60
-
-
 l = null
 gameManager = null
 p = null
@@ -8,10 +6,14 @@ b_image = null
 bird_image = null
 backManager = null
 play_image = null
+score = 0;
 function preload(){
     b_image = loadImage("background.png")
     bird_image = loadImage("flappy.jpg")
     play_image = loadImage("play.png")
+    bird_die_sound = loadSound("sfx_die.wav");
+    bird_point_sound = loadSound("sfx_point.wav");
+    bird_wing_sound = loadSound("sfx_wing.wav");
 }
 
 
@@ -32,14 +34,15 @@ function draw(){
     gameManager.run()
     textSize(24)
     fill(0)
-    text("Score : "+gameManager.bird.score,400,50)
-    text("High Score : "+gameManager.highscore,10,50)
+    text("Score : " + score,400,50)
+    text("High Score : " + gameManager.highscore,10,50)
     
 }
 
 function keyPressed(){
     if(keyCode==32){
         gameManager.bird.jump()
+        bird_wing_sound.play();
     }
 }
 
@@ -58,11 +61,11 @@ class Pipe{
 
 class Bird{
     constructor(img){
-        this.bImage       = img
-        this.y            = 150
+        this.bImage = img
+        this.y = 150
         this.velocity = 0
         this.acceleration = 2
-        this.score  = 0
+        score  = 0
 
     }
     draw(){
@@ -79,20 +82,20 @@ class Bird{
         let MAX_SPEED = 8
         let MAX_NEGATIVE_SPEED = -14
 
-        if(this.velocity<MAX_SPEED && this.acceleration>0){
-            this.velocity+=this.acceleration
+        if(this.velocity < MAX_SPEED && this.acceleration>0){
+            this.velocity += this.acceleration
         }
 
-        if(this.velocity>MAX_NEGATIVE_SPEED && this.acceleration<0){
-            this.velocity+=this.acceleration
+        if(this.velocity > MAX_NEGATIVE_SPEED && this.acceleration<0){
+            this.velocity += this.acceleration
         }
         
-        if(this.velocity<=MAX_NEGATIVE_SPEED){
+        if(this.velocity <= MAX_NEGATIVE_SPEED){
             this.acceleration = 2
         }
 
-        if(this.y<height-60)
-            this.y+=this.velocity
+        if(this.y < height - 60)
+            this.y += this.velocity
 
     }
 
@@ -117,6 +120,8 @@ class GameManager{
 
                 if(frontpipe.pipeAbove.collision(this.bird) || frontpipe.pipeBelow.collision(this.bird)){
                     this.gameOver()
+                    bird_die_sound.play()
+                    score = 0;
                 }
 
                 this.pipes.forEach(pipe=>{
@@ -125,17 +130,18 @@ class GameManager{
                 })
     
                 if(frontpipe.getX()==150-100){
-                    this.bird.score+=1
-                    if(this.highscore<this.bird.score){
-                        this.highscore = this.bird.score
+                    score += 1
+                    bird_point_sound.play();
+                    if(this.highscore < score){
+                        this.highscore = score
                     }
                 }
                
-                if(frontpipe.getX()==200){
+                if(frontpipe.getX() == 200){
                     this.pipes.push(new PipePair())
                 }
                 
-                if(frontpipe.getX()<-100){
+                if(frontpipe.getX() <- 100){
                     this.pipes.shift()
                     
                 }
@@ -171,7 +177,7 @@ class GameManager{
     
     gameOver(){
         this.bird.y = 150
-        this.score = 0
+        score = 0
         this.pipes = []
         this.pipes.push(new PipePair())
         this.gameStarted = false
@@ -183,12 +189,12 @@ class GameManager{
 class PipePair{
     
     constructor(){
-        this.pipeAbove = new PipeAbove()
-        this.pipeBelow = new PipeBelow()
+        this.pipeAbove = new PipeAbove();
+        this.pipeBelow = new PipeBelow();
     }
     
     draw(){
-        this.pipeAbove.draw()
+        this.pipeAbove.draw();
         this.pipeBelow.draw()
     }
 
